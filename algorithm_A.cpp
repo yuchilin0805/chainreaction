@@ -171,7 +171,7 @@ int maximum(int a,int b){
 }
 class bestpoint{
     public:
-        friend bestpoint minimax(Board&,int,bool,int,int,char,char); 
+        friend bestpoint minimax(Board,int,bool,int,int,char,char); 
         friend void algorithm_A(Board, Player, int*);
         //friend bestpoint findbestscore(Board&,char,int,int);
     private:
@@ -208,9 +208,9 @@ class bestpoint{
 
 }*/
 
-bestpoint minimax(Board& board ,int depth,bool ismax,int alpha,int beta,char color,char enemycolor){
+bestpoint minimax(Board board ,int depth,bool ismax,int alpha,int beta,char color,char enemycolor){
 
-    if(depth==7){
+    if(depth==3){
         bestpoint val;
         val.bestvalue=scores(board,color);
         return val;
@@ -241,9 +241,12 @@ bestpoint minimax(Board& board ,int depth,bool ismax,int alpha,int beta,char col
                 }
                 
             }
+            if(beta<=alpha){
+                break;
+            }
         }
            
-
+      
         return best;
     }
     else{
@@ -267,10 +270,11 @@ bestpoint minimax(Board& board ,int depth,bool ismax,int alpha,int beta,char col
                     if(best.bestvalue<beta){
                         beta=best.bestvalue;
                     }
-                    if(beta<=alpha){
-                        break;
-                    }
+                    
                 }
+            }
+            if(beta<=alpha){
+                break;
             }
         }
 
@@ -350,13 +354,31 @@ void algorithm_A(Board board, Player player, int index[]){
         if(board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w') break;
     }*/
     char enemycolor=(color=='r')? 'b':'r';
-    bestpoint best=minimax(thisround,1,true,-1000,10000,color,enemycolor);
+    bestpoint best=minimax(thisround,0,true,-10000,10000,color,enemycolor);
+    if(best.bestvalue==-10000){
+        int ff=0;
+        for(int i=0;i<5;i++){
+            for(int j=0;j<6;j++){
+                if(board.get_cell_color(i,j)==color){
+                    best.x=i;
+                    best.y=j;
+                    ff=1;
+                    break;
+                }
+            }
+            if(ff)
+                break;
+        }
+        
+    }
+        
     /*Player p(color);
     thisround.place_orb(row, col, &p);*/
     row=best.x;
     col=best.y;
 
     cout<<scores(thisround,color)<<endl;
+    cout<<row<<" "<<col<<endl;
     index[0] = row;
     index[1] = col;
 }
